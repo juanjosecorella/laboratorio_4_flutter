@@ -33,9 +33,9 @@ class DBHelper {
     );
   }
 
-  Future<int> insertTask(Task task) async {
+  Future<int> insertTask(String title) async {
     final db = await database;
-    return await db.insert('tasks', task.toMap());
+    return await db.insert('tasks', {title: title});
   }
 
   Future<List<Task>> getTasks() async {
