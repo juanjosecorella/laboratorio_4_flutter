@@ -27,7 +27,13 @@ class DBHelper {
           CREATE TABLE tasks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT
-          )
+          );
+
+          CREATE TABLE task_collections (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+
+          );
         ''');
       },
     );
@@ -35,7 +41,7 @@ class DBHelper {
 
   Future<int> insertTask(String title) async {
     final db = await database;
-    return await db.insert('tasks', {title: title});
+    return await db.insert('tasks', {'title': title});
   }
 
   Future<List<Task>> getTasks() async {
