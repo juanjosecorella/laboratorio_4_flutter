@@ -26,7 +26,8 @@ class DBHelper {
         await db.execute('''
           CREATE TABLE tasks (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT
+            title TEXT,
+            confirmed INTEGER NOT NULL default 0
           );
 
           CREATE TABLE task_collections (
@@ -50,8 +51,20 @@ class DBHelper {
     return result.map((map) => Task.fromMap(map)).toList();
   }
 
+  Future<int> confirmTask(int id) async {
+    final db = await database;
+    return await db.update("tasks", where: 'id = ?', whereArgs: [id], { 'confirmed': 1 });
+  }
+
   Future<int> deleteTask(int id) async {
     final db = await database;
     return await db.delete('tasks', where: 'id = ?', whereArgs: [id]);
   }
+}
+
+Future<void> deleteLocalDatabase() async {
+  final dbPath = await getDatabasesPath();
+  print("\n\n" + "eliminando en path: " + dbPath );
+  final path = join(dbPath, 'tasks.db');
+  await deleteDatabase(path);
 }

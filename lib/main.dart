@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'db/db_helper.dart';
 import 'models/task.dart';
 
-void main() {
+void main(){
   runApp(const ToDoApp());
 }
 
@@ -53,6 +53,11 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> _confirmTask(int id) async {
+    await dbHelper.confirmTask(id);
+    _loadTasks();
+  }
+
   Future<void> _deleteTask(int id) async {
     await dbHelper.deleteTask(id);
     _loadTasks();
@@ -68,9 +73,13 @@ class _HomePageState extends State<HomePage> {
           children: [
             TextField(
               controller: _controller,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 labelText: 'Nueva tarea',
-                suffixIcon: Icon(Icons.add),
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.add),
+                  color: Colors.blue,
+                  onPressed: _addTask,
+                ),
               ),
               onSubmitted: (_) => _addTask(),
             ),
@@ -95,7 +104,54 @@ class _HomePageState extends State<HomePage> {
                                 color: Colors.white,
                               ),
                             ),
-                            child: ListTile(title: Text(task.title)),
+                            child: Card(
+                              color:
+                                  task.confirmed ? Colors.green : Colors.white,
+                              child: Padding(
+                                padding: const EdgeInsets.all(20),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      task.title,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color:
+                                            task.confirmed
+                                                ? Colors.white
+                                                : Colors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          task.confirmed
+                                              ? 'Confirmada'
+                                              : 'Pendiente',
+                                          style: TextStyle(
+                                            color:
+                                                task.confirmed
+                                                    ? Colors.white
+                                                    : Colors.black,
+                                          ),
+                                        ),
+                                        if (!task.confirmed)
+                                          IconButton.filled(
+                                            icon: const Icon(Icons.check),
+                                            onPressed: () {
+                                              _confirmTask(task.id!);
+                                            },
+                                          ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           );
                         },
                       ),
